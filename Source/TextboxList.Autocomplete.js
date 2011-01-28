@@ -198,6 +198,14 @@ $.TextboxList.Autocomplete = function(textboxlist, _options){
 						currentInput.setValue([null, '', null]);
 					}
 				}
+			  break;
+			case 13: //enter
+			  if (current && current.length) {
+			    evStop();
+			    addCurrent();
+			  }
+			  else if(options.stopEnter)
+			    evStop();
 		}
 	};
 	
