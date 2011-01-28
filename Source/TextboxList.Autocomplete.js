@@ -176,15 +176,18 @@ $.TextboxList.Autocomplete = function(textboxlist, _options){
 	var navigate = function(ev){
 		var evStop = function(){ ev.stopPropagation(); ev.preventDefault(); };
 		switch (ev.which){
-			case 38:			
+			case 38: //up
 				evStop();
 				(!options.onlyFromValues && current && current.get(0) === list.find(':first').get(0)) ? blur() : focusRelative('prev');
 				break;
-			case 40:			
+			case 40: //down
 				evStop();
 				(current && current.length) ? focusRelative('next') : focusFirst();
 				break;
-			case 13:
+			case 39: //right
+			  if ((!current || current.length == 0) || (currentInput.getCaret() < currentInput.getValue()[1].length))
+			    break;
+			case 9: //tab
 				evStop();
 				if (current && current.length) addCurrent();
 				else if (!options.onlyFromValues){
