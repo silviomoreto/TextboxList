@@ -57,7 +57,10 @@ $.TextboxList.Autocomplete = function(textboxlist, _options){
 		if (bit) currentInput = bit;
 		if (!options.queryRemote && !values.length) return;
 		var search = $.trim(currentInput.getValue()[1]);
-		if (search.length < options.minLength) showPlaceholder();
+		if (search.length < options.minLength) {
+		  current = null;
+		  showPlaceholder();
+		}
 		if (search == currentSearch) return;
 		currentSearch = search;
 		list.css('display', 'none');
