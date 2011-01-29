@@ -54,13 +54,12 @@ $.TextboxList.Autocomplete = function(textboxlist, _options){
 	};
 	
 	var search = function(bit){
+	  console.log('search');
 		if (bit) currentInput = bit;
 		if (!options.queryRemote && !values.length) return;
 		var search = $.trim(currentInput.getValue()[1]);
-		if (search.length < options.minLength) {
-		  current = null;
-		  showPlaceholder();
-		}
+		search.length == 0 ? showPlaceholder() : hidePlaceholder();
+    if (search.length < options.minLength) current = null;
 		if (search == currentSearch) return;
 		currentSearch = search;
 		list.css('display', 'none');
@@ -93,7 +92,10 @@ $.TextboxList.Autocomplete = function(textboxlist, _options){
 			results = $.grep(results, function(v){ return textboxlist.isDuplicate(v) == -1; });		
 		}
 		hidePlaceholder();
-		if (!results.length) return;
+		if (!results.length) {
+		  current = null;
+		  return;
+		}
 		blur();
 		list.empty().css('display', 'block');
 		$.each(results, function(i, r){ addResult(r, search); });
