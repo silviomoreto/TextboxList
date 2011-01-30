@@ -14,11 +14,12 @@ Script: TextboxList.Autocomplete.js
 	
 $.TextboxList.Autocomplete = function(textboxlist, _options){
 	
-  var index, prefix, method, container, list, values = [], searchValues = [], results = [], placeholder = false, current, currentInput, hidetimer, doAdd, currentSearch, currentRequest;
+  var index, prefix, method, container, list, values = [], searchValues = [], results = [], placeholder = false, current, currentInput, suggestInput, hidetimer, doAdd, currentSearch, currentRequest;
 	var options = $.extend(true, {
 		minLength: 1,
 		maxResults: 10,
 		insensitive: true,
+		inlineSuggest: true,
 		highlight: true,
 		highlightSelector: null,
 		mouseInteraction: true,
@@ -49,12 +50,15 @@ $.TextboxList.Autocomplete = function(textboxlist, _options){
 		});
 	};
 	
+	var self = this;
 	var setupBit = function(bit){
-		bit.toElement().keydown(navigate).keyup(function(){ search(); });
+		bit.getInput().keydown(navigate).keyup(function(){ search(); });
+		if(options.inlineSuggest) {
+		  suggestInput = new $.SuggestInput(bit, textboxlist, self);
+		}
 	};
 	
 	var search = function(bit){
-	  console.log('search');
 		if (bit) currentInput = bit;
 		if (!options.queryRemote && !values.length) return;
 		var search = $.trim(currentInput.getValue()[1]);
@@ -93,13 +97,14 @@ $.TextboxList.Autocomplete = function(textboxlist, _options){
 		}
 		hidePlaceholder();
 		if (!results.length) {
-		  current = null;
-		  return;
+		  if (options.inlineSuggest) suggestInput.clearSuggest();
+		  current = null; return;
 		}
 		blur();
-		list.empty().css('display', 'block');
+		list.empty().show();
 		$.each(results, function(i, r){ addResult(r, search); });
 		if (options.onlyFromValues) focusFirst();
+		if (options.inlineSuggest) suggestInput.suggest(results[0][1]);
 		results = results;
 	};
 	
@@ -111,6 +116,7 @@ $.TextboxList.Autocomplete = function(textboxlist, _options){
 		});
 		if (options.mouseInteraction){
 			element.css('cursor', 'pointer').hover(function(){ focus(element); }).mousedown(function(ev){
+			  if(ev.which != 1) return;
 				ev.stopPropagation(); 
 				ev.preventDefault();
 				clearTimeout(hidetimer);
@@ -130,7 +136,7 @@ $.TextboxList.Autocomplete = function(textboxlist, _options){
 	var hide = function(){
 		hidetimer = setTimeout(function(){
 			hidePlaceholder();
-			list.css('display', 'none');
+			list.hide();
 			currentSearch = null;			
 		}, $.browser.msie ? 150 : 0);
 	};
@@ -216,6 +222,10 @@ $.TextboxList.Autocomplete = function(textboxlist, _options){
 	
 	this.setValues = function(v){
 		values = v;
+	};
+	
+	this.getOptions = function(){
+		return options;
 	};
 	
 	init();
