@@ -427,14 +427,16 @@ $.TextboxListBit = function(type, value, textboxlist, _options){
 		};
 		
 		var toBox = function(){
-			var value = self.getValue();				
-			var b = textboxlist.create('box', value);
-			if (b){
-				b.inject(bit, 'before');
-				self.setValue([null, '', null]);
-				return b;
+			if (value[1].length > 0) {
+				var value = self.getValue();				
+				var b = textboxlist.create('box', value);
+				if (b){
+					b.inject(bit, 'before');
+					self.setValue([null, '', null]);
+					return b;
+				}
+				return null;
 			}
-			return null;
 		};
 		
 		this.toBox = toBox;
